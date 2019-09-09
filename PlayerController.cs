@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     private float r = 0.0f;
     private float s= 0.0f;
     private Transform tr;
-    public float moveSpeed = 3.0f;
+    public float moveSpeed;
     public float rotSpeed = 80.0f;
     public float jumpPower = 10.0f;
     Animator animator;
@@ -29,22 +29,33 @@ public class PlayerController : MonoBehaviour
         //움직이지 않을때
         if (h == 0 && v == 0) animator.SetBool("Ismove", false);
         
-        //움직일떄
+        //움직일때
         else
         {
-            //쉬프트를 누르지 않았을 떄
-            if (s == 0)
+            moveSpeed = 1.0f;
+            if (Input.GetKey( KeyCode.W))
             {
-                moveSpeed = 3.0f;
-                animator.SetBool("Isrun", false);
+                animator.SetBool("Ismove", true);
+
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+                    moveSpeed = 5.0f;
+                    animator.SetBool("Isrun", true);
+
+                }
+                else animator.SetBool("Isrun", false);
             }
-            //쉬프트를 눌렀을 때
             else
             {
-                moveSpeed = 5.0f;
-                animator.SetBool("Isrun", true);
-            }
-            animator.SetBool("Ismove", true);
+                moveSpeed = 7.0f;
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+                    moveSpeed = 5.0f;
+                    animator.SetBool("Isrun", true);
+
+                }
+                else animator.SetBool("Isrun", false);
+            }    
             Vector3 moveDir = (Vector3.forward * v) + (Vector3.right * h);
             tr.Translate(moveDir.normalized * moveSpeed * Time.deltaTime, Space.Self);
         }
