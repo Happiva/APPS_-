@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     public float jumpPower = 10.0f;
     Animator animator;
 
+    private Inventory inventory;
     private GameObject closest_item = null;
     private GameObject carried_item = null;
     private ItemRoot item_root = null;
@@ -32,6 +33,7 @@ public class PlayerController : MonoBehaviour
     {
         tr = GetComponent<Transform>();
         animator = GetComponent<Animator>();
+        inventory = GameObject.FindGameObjectWithTag("Player").GetComponent<Inventory>();
 
         //다연
         this.item_root = GameObject.Find("Food").GetComponent<ItemRoot>();
@@ -157,6 +159,7 @@ public class PlayerController : MonoBehaviour
                     }
 
                     this.carried_item = this.closest_item;
+                    PutInInventory(carried_item);
                     GameObject.Destroy(this.carried_item);
                     this.closest_item = null;
                 }
@@ -188,6 +191,23 @@ public class PlayerController : MonoBehaviour
             ret = true;
         } while (false);
         return ret;
+    }
+
+    void PutInInventory(GameObject item) {
+        if (item.CompareTag("Potato")) {
+            inventory.amount[0]++;
+            inventory.amountText[0].text = inventory.amount[0] + "";
+        }
+        if (item.CompareTag("Crab"))
+        {
+            inventory.amount[1]++;
+            inventory.amountText[0].text = inventory.amount[1] + "";
+        }
+        if (item.CompareTag("Tree"))
+        {
+            inventory.amount[2]++;
+            inventory.amountText[2].text = inventory.amount[2] + "";
+        }
     }
 }
 
