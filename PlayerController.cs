@@ -21,6 +21,9 @@ public class PlayerController : MonoBehaviour
     private ItemRoot item_root = null;
     public GUIStyle guistyle;
 
+    //현빈 0917
+    private Player player;
+
     private GameObject closest_event = null;
     private EventRoot event_root = null;
     private GameObject ship_model = null;
@@ -39,6 +42,9 @@ public class PlayerController : MonoBehaviour
         tr = GetComponent<Transform>();
         animator = GetComponent<Animator>();
         inventory = GameObject.FindGameObjectWithTag("Player").GetComponent<Inventory>();
+
+        //현빈 0917
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 
         //다연
         this.item_root = GameObject.Find("Food").GetComponent<ItemRoot>();
@@ -63,7 +69,18 @@ public class PlayerController : MonoBehaviour
         r = Input.GetAxis("Mouse X");
         s = Input.GetAxis("Fire3");
         tr.Rotate(Vector3.up * rotSpeed * Time.deltaTime * r);
-       
+
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            //현빈 0917
+            player.isRun = true;
+        }
+        else {
+            //현빈 0917
+            Debug.Log("집가고 싶다");
+            player.isRun = false;
+        }
+
         //움직이지 않을 때
         if (h == 0 && v == 0) animator.SetBool("Ismove", false);
         
@@ -80,8 +97,15 @@ public class PlayerController : MonoBehaviour
                     moveSpeed = 5.0f;
                     animator.SetBool("Isrun", true);
 
+                   
+
                 }
-                else animator.SetBool("Isrun", false);
+                else
+                {
+                    animator.SetBool("Isrun", false);
+
+                   
+                }
             }
             else
             {
@@ -90,9 +114,18 @@ public class PlayerController : MonoBehaviour
                 {
                     moveSpeed = 5.0f;
                     animator.SetBool("Isrun", true);
+                    
+                    //현빈 0917
+                    //player.isRun = true;
 
                 }
-                else animator.SetBool("Isrun", false);
+                else
+                {
+                    animator.SetBool("Isrun", false);
+
+                    //현빈 0917
+                    //player.isRun = false;
+                }
             }    
             Vector3 moveDir = (Vector3.forward * v) + (Vector3.right * h);
             tr.Translate(moveDir.normalized * moveSpeed * Time.deltaTime, Space.Self);
