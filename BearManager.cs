@@ -9,10 +9,12 @@ public class BearManager : MonoBehaviour
     public float createTime;
     public int Maxbear = 1;
     public bool isGameOver = false;
+    Animator animator;
 
     private void Start()
     {
         point = GameObject.Find("Bear_point").GetComponentInChildren<Transform>();
+        animator = GetComponent<Animator>();
 
         if (point != null)
         {
@@ -37,7 +39,8 @@ public class BearManager : MonoBehaviour
     }
     public void Dead()
     {
-        Destroy(this.BearPrefab, 0.5f);
+        animator.SetBool("IsDead", true);
+        Destroy(this.BearPrefab, 2f);
     }
 
 }
