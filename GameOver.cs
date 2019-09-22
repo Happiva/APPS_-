@@ -13,9 +13,12 @@ public class GameOver : MonoBehaviour
     {
         dayText.text = "You survived for " + Day.day + " days.";
     }
-    /*
-    public void showDay() {
 
+    public void ReturnToMain() {
+        SceneManager.LoadScene("Main");
     }
-    */
+
+    public void RestartGame() {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
+    }
 }
