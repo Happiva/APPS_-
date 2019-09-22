@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -49,7 +50,8 @@ public class PlayerController : MonoBehaviour
         //다연
         this.item_root = GameObject.Find("Food").GetComponent<ItemRoot>();
 
-        this.guistyle.fontSize = 14;
+        //this.guistyle.fontSize = 14;
+        this.guistyle.fontSize = 35;
 
         this.event_root = GameObject.Find("GameRoot").GetComponent<EventRoot>();
 
@@ -70,20 +72,23 @@ public class PlayerController : MonoBehaviour
         s = Input.GetAxis("Fire3");
         tr.Rotate(Vector3.up * rotSpeed * Time.deltaTime * r);
 
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        if (player.health == 0) GameOver();
+
+        if (Input.GetKey(KeyCode.LeftShift))
         {
-            //현빈 0917
             player.isRun = true;
         }
         else {
-            //현빈 0917
-            Debug.Log("집가고 싶다");
             player.isRun = false;
         }
 
         //움직이지 않을 때
-        if (h == 0 && v == 0) animator.SetBool("Ismove", false);
-        
+        if (h == 0 && v == 0) {
+            animator.SetBool("Ismove", false);
+
+            player.isMove = false;
+        }
+
         //움직일 때
         else
         {
@@ -92,19 +97,16 @@ public class PlayerController : MonoBehaviour
             {
                 animator.SetBool("Ismove", true);
 
+                player.isMove = true;
+
                 if (Input.GetKey(KeyCode.LeftShift))
                 {
                     moveSpeed = 5.0f;
                     animator.SetBool("Isrun", true);
-
-                   
-
                 }
                 else
                 {
                     animator.SetBool("Isrun", false);
-
-                   
                 }
             }
             else
@@ -114,19 +116,12 @@ public class PlayerController : MonoBehaviour
                 {
                     moveSpeed = 5.0f;
                     animator.SetBool("Isrun", true);
-                    
-                    //현빈 0917
-                    //player.isRun = true;
-
                 }
                 else
                 {
                     animator.SetBool("Isrun", false);
-
-                    //현빈 0917
-                    //player.isRun = false;
                 }
-            }    
+            }
             Vector3 moveDir = (Vector3.forward * v) + (Vector3.right * h);
             tr.Translate(moveDir.normalized * moveSpeed * Time.deltaTime, Space.Self);
         }
@@ -210,15 +205,22 @@ public class PlayerController : MonoBehaviour
 
         if (this.carried_item != null)
         {
+            /*
             GUI.Box(new Rect(360, 200, 100, 40), "Choose");
             GUI.Button(new Rect(360, 230, 100, 90), "Z : 버린다", guistyle);
+            */
+            GUI.Box(new Rect(810, 300, 500, 300), "Choose");
+            GUI.Button(new Rect(810, 370, 500, 350), "Z : 버린다", guistyle);
         }
         else
         {
             if (this.closest_item != null)
-            {
+            {   /*
                 GUI.Box(new Rect(340, 210, 100, 40), "Choose");
                 GUI.Button(new Rect(360, 230, 100, 90), "Z : 줍는다", guistyle);
+                */
+                GUI.Box(new Rect(810, 300, 300, 150), "Choose");
+                GUI.Button(new Rect(885, 360, 300, 150), "Z : 줍는다", guistyle);
             }
         }
     }
@@ -315,7 +317,11 @@ public class PlayerController : MonoBehaviour
             ret = true;
         } while (false);
         return (ret);
+    }
 
+    public void GameOver() {
+        Debug.Log("Game Over!");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 }
 
