@@ -24,6 +24,8 @@ public class PlayerController : MonoBehaviour
 
     //현빈 0917
     private Player player;
+    public int corns = 3; //수리에 필요한 옥수수개수
+    public int trees = 2; //수리에 필요한 나무 개수
 
     private GameObject closest_event = null;
     private EventRoot event_root = null;
@@ -37,6 +39,13 @@ public class PlayerController : MonoBehaviour
     }
 
     private Key key;
+
+    private struct R_Key
+    {
+        public bool pick;
+    }
+
+    private R_Key rkey;
 
     void Start()
     {
@@ -64,6 +73,12 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    private void rkey_input()
+    {
+        this.rkey.pick = Input.GetKeyDown(KeyCode.R);
+
+    }
+
     void Update()
     {
         h = Input.GetAxis("Horizontal");
@@ -72,13 +87,14 @@ public class PlayerController : MonoBehaviour
         s = Input.GetAxis("Fire3");
         tr.Rotate(Vector3.up * rotSpeed * Time.deltaTime * r);
 
-        if (player.health == 0) GameOver();
-
         if (Input.GetKey(KeyCode.LeftShift))
         {
+            //현빈 0917
             player.isRun = true;
         }
         else {
+            //현빈 0917
+            //Debug.Log("집가고 싶다");
             player.isRun = false;
         }
 
@@ -86,6 +102,7 @@ public class PlayerController : MonoBehaviour
         if (h == 0 && v == 0) {
             animator.SetBool("Ismove", false);
 
+            //현빈 0920
             player.isMove = false;
         }
 
@@ -96,7 +113,7 @@ public class PlayerController : MonoBehaviour
             if (Input.GetKey(KeyCode.W))
             {
                 animator.SetBool("Ismove", true);
-
+                //현빈 0920
                 player.isMove = true;
 
                 if (Input.GetKey(KeyCode.LeftShift))
@@ -127,29 +144,33 @@ public class PlayerController : MonoBehaviour
         }
         //여기서 부터 추가한 부분------------다연//
         this.get_input();
+        this.rkey_input();
         this.pick_or_drop_control(); // 함수 이름 수정함, 2019.09.01, 다연
         this.step_timer += Time.deltaTime;
         float repair_time = 2.0f;
 
-        if (this.closest_event != null)
-        {
-            if (!this.is_event_ignitable())
-            {
-                // break;
-            }
+        /* if (this.closest_event != null)
+         {
+             if (!this.is_event_ignitable())
+             {
+                 // break;
+             }
 
-            Event.TYPE ignitable_event = this.event_root.getEventType(this.closest_event);
-            switch (ignitable_event)
-            {
-                case Event.TYPE.SHIP:
-                    if (this.step_timer > repair_time)
-                    {
-                        break;
-                    }
-                    break;
-            }
-            //break;
-        }
+             Event.TYPE ignitable_event = this.event_root.getEventType(this.closest_event);
+             switch (ignitable_event)
+             {
+                 case Event.TYPE.SHIP:
+                     if (this.step_timer > repair_time)
+                     {
+                         break;
+                     }
+                     break;
+             }
+             //break;
+         }*/
+
+        this.event_start();
+        this.is_event_ignitable();
     }
 
     void OnTriggerStay(Collider other)
@@ -223,6 +244,21 @@ public class PlayerController : MonoBehaviour
                 GUI.Button(new Rect(885, 360, 300, 150), "Z : 줍는다", guistyle);
             }
         }
+
+        /////여기부터추가
+        if (is_event_ignitable() && closest_event != null)
+        {
+            GUI.Box(new Rect(810, 300, 300, 150), "Choose");
+            GUI.Button(new Rect(885, 360, 300, 150), "R: 고친다", guistyle);
+
+        }
+        else if (!is_event_ignitable() && closest_event != null)
+        {
+            GUI.Box(new Rect(810, 300, 300, 150), "Warning");
+            GUI.Button(new Rect(820, 340, 300, 150), "옥수수" + (corns - inventory.amount[3]) + "개 더 필요", guistyle);
+            GUI.Button(new Rect(840, 370, 300, 150), "나무" + (trees - inventory.amount[2]) + "개 더 필요", guistyle);
+        }
+
     }
 
     private void pick_or_drop_control() //함수 이름 수정, 2019.09.01
@@ -299,7 +335,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private bool is_event_ignitable()
+    private bool is_event_ignitable() //인벤토리에 잇는 나무갯수 2개, 이벤트 실행 가능한지 판별하는 함수
     {
         bool ret = false;
         do
@@ -309,7 +345,7 @@ public class PlayerController : MonoBehaviour
                 break;
             }
 
-            if (inventory.amount[2] < 20) //tree개수 20보다 작을경우
+            if (inventory.amount[2] < 2 && inventory.amount[3] < 3) //tree개수,옥수수개수 조건 못맞추면 break
             {
                 break;
             }
@@ -317,9 +353,20 @@ public class PlayerController : MonoBehaviour
             ret = true;
         } while (false);
         return (ret);
+
     }
 
-    public void GameOver() {
+    /////여기서부터 다시 추가한 부분/////////
+    void event_start() //이벤트 실행
+    {
+        if (this.rkey.pick && is_event_ignitable() && closest_event != null)
+        {
+            SceneManager.LoadScene("GameOver");
+        }
+    }
+
+    public void GameOver()
+    {
         Debug.Log("Game Over!");
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
