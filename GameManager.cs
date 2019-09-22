@@ -4,6 +4,10 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+public static class Day {
+    public static float day;
+}
+
 public class GameManager : MonoBehaviour {
     public Image timeBar;
     public Text timeText;
@@ -16,8 +20,8 @@ public class GameManager : MonoBehaviour {
 	private bool isSetDay; //하루가 지났나 안지났나 판정하는 함수
 
 	private int GameDay = 1; //지금이 몇일째
-	private float dayTime = 0f; // 하루가 얼마나 경과했는가
-	private float day = 10f; //하루는 10초
+	public float dayTime = 0f; // 하루가 얼마나 경과했는가
+	private float day = 30f; //하루는 10초
 
 	void Start () {
 		if (instance == null)
@@ -31,6 +35,8 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void Update () {
+        Day.day = GameDay;
+
 		if (dayTime < day && !isSetDay) //하루가 안 지났을 때
         {
 			dayTime += Time.deltaTime;
